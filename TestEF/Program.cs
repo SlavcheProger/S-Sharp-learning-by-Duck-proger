@@ -22,27 +22,42 @@ namespace TestEF
 
             while (true)
             {
+                Console.Write("What do you want to change? ");
+
+                var what = Console.ReadLine();
+
                 Console.Write("To remove last item write 0, to add default item write 1 : ");
 
                 var choice = Convert.ToInt32(Console.ReadLine());
+
                 switch (choice)
                 {
                     case 0:
-                        var what = Console.ReadLine();
-
                         if (what == "cars")
+                        {
                             DB.Cars.RemoveAt(DB.Cars.Count - 1);
+                        }
                         else if (what == "planes")
+                        {
                             DB.Planes.RemoveAt(DB.Planes.Count - 1);
+                        }
+
                         break;
                     case 1:
-                        //todo: adding to db and saving to the .json file
+                        if (what == "cars")
+                        {
+                            DB.Cars.Add(new Car());
+                        }
+                        else if (what == "planes")
+                            DB.Planes.Add(new Plane());
                         break;
                     default:
-                        Console.Write("Choose 0 or 1");
+                        Console.WriteLine("Choose 0 or 1");
                         break;
                 }
                 WriteDataToFile(DB);
+                Console.Write("If you want to exit, enter 0, or any key to continue: ");
+                if (Convert.ToInt32(Console.ReadLine()) == 0) { break; }
             }
 
             /////////////////////////
@@ -61,12 +76,14 @@ namespace TestEF
         public static DataBase ReadDB()
         {
             return JsonConvert.DeserializeObject<DataBase>
-                (File.ReadAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json")); //todo: add filepath
+                (File.ReadAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json"));
         }
+
         public static void WriteDataToFile(DataBase dB)
         {
-            //todo: add saving database to the .json file
+                File.WriteAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json", JsonConvert.SerializeObject(dB));
         }
+
         public static void ShowDB(DataBase db)
         {
             foreach (var item in db.Cars)
