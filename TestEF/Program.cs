@@ -8,7 +8,7 @@ namespace TestEF
     {
         static void Main(string[] args)
         {
-            var DB = new DataBase();
+            DataBase DB;
             try
             {
                 DB = ReadDB();
@@ -16,7 +16,8 @@ namespace TestEF
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception.ToString());
+                Log(exception);
+                DB = new DataBase();
             }
 
             while (true)
@@ -48,10 +49,19 @@ namespace TestEF
             Console.WriteLine("Succeed!");
             Console.ReadKey();
         }
+
+        public static void Log(Exception exception)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(exception.ToString());
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
         public static DataBase ReadDB()
         {
             return JsonConvert.DeserializeObject<DataBase>
-                (File.ReadAllText(@"")); //todo: add filepath
+                (File.ReadAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json")); //todo: add filepath
         }
         public static void WriteDataToFile(DataBase dB)
         {

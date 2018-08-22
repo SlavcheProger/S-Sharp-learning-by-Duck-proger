@@ -57,7 +57,6 @@
     <Compile Include="Plane.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Transport.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
