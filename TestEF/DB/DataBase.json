@@ -1,1 +1,13 @@
-{"Cars":[],"Planes":[{"AviaComp":"def. aviaComp","AmountOfTurb":0,"Speed":0,"FuelConsum":0.0,"CostOfMaintain":0,"Id":0}]}
+{
+  "Cars": [],
+  "Planes": [
+    {
+      "AviaComp": "def. aviaComp",
+      "AmountOfTurb": 0,
+      "Speed": 0,
+      "FuelConsum": 0.0,
+      "CostOfMaintain": 0,
+      "Id": 0
+    }
+  ]
+}

@@ -32,22 +32,26 @@ namespace TestEF
 
                 Console.WriteLine("Insert item`s id");
 
-                var id = Convert.ToInt32(Console.ReadLine());
+                var id = Convert.ToInt32(Console.ReadLine()); //пользователь ввел некое РАНДОМНОЕ число
 
-                  if(((choice == 0) | (choice == 1) | (choice == 2))&&(id != DB.Cars.Count)){
-                        if (what == "cars")
-                        {
-                            DB.Cars.RemoveAt(id);
-                        }
-                        else if (what == "planes")
-                        {
-                            DB.Planes.RemoveAt(id);
-                        }
-                  }
+                if (((choice == 0) | (choice == 1) | (choice == 2))
+                  && (id != DB.Cars.Count)) //не понимаю смысла этой проверки - объясни пж
+                                            //сюда же - ты проверяешь только машины - забыл про самолеты
+                {
+                    if (what == "cars")
+                    {
+                        DB.Cars.RemoveAt(id);
+                    }
+                    else if (what == "planes")
+                    {
+                        DB.Planes.RemoveAt(id);
+                    }
+                }
 
                 switch (choice)
                 {
                     case 0:
+                        //где код???
                         break;
                     case 1:
                         if (what == "cars")
@@ -57,7 +61,7 @@ namespace TestEF
                         else if (what == "planes")
                             DB.Planes.Insert(id, new Plane(id));
                         break;
-                    case 2 :
+                    case 2:
                         Console.Write("Speed: ");
                         var par1 = Convert.ToInt32(Console.ReadLine());
                         Console.Write("Fuel consumation: ");
@@ -67,19 +71,20 @@ namespace TestEF
                         if (what == "cars")
                         {
                             Console.Write("Model: ");
-                            var Cpar1 = Console.ReadLine();
+                            var Cpar1 = Console.ReadLine();  //переменные пишем с маленькой буквы - исправить везде
                             Console.Write("Color: ");
                             var Cpar2 = Console.ReadLine();
-                            DB.Cars.Add(new Car(Cpar1,Cpar2,par1,par2,par3,id));
+                            DB.Cars.Add(new Car(Cpar1, Cpar2, par1, par2, par3, id));
                         }
-                        else if (what == "planes"){
+                        else if (what == "planes")
+                        {
                             Console.Write("Avia company: ");
                             var Ppar1 = Console.ReadLine();
                             Console.Write("Amount of turbines: ");
                             var Ppar2 = Convert.ToInt32(Console.ReadLine());
-                            DB.Planes.Add(new Plane(Ppar1,Ppar2,par1,par2,par3,id));
-                         }
-                    break;
+                            DB.Planes.Add(new Plane(Ppar1, Ppar2, par1, par2, par3, id));
+                        }
+                        break;
                     default:
                         Console.WriteLine("Choose 0, 1 or 2");
                         break;
@@ -111,7 +116,7 @@ namespace TestEF
 
         public static void WriteDataToFile(DataBase dB)
         {
-                File.WriteAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json", JsonConvert.SerializeObject(dB));
+            File.WriteAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json", JsonConvert.SerializeObject(dB));
         }
 
         public static void ShowDB(DataBase db)
