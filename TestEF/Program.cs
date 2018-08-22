@@ -22,40 +22,70 @@ namespace TestEF
 
             while (true)
             {
-                Console.Write("What do you want to change? ");
+                Console.WriteLine("What do you want to change? ");
 
                 var what = Console.ReadLine();
 
-                Console.Write("To remove last item write 0, to add default item write 1 : ");
+                Console.WriteLine("0-remove last item \n1-add default item \n2-add item with parameters");
 
                 var choice = Convert.ToInt32(Console.ReadLine());
+
+                Console.WriteLine("Insert item`s id");
+
+                var id = Convert.ToInt32(Console.ReadLine());
+
+                  if(((choice == 0) | (choice == 1) | (choice == 2))&&(id != DB.Cars.Count)){
+                        if (what == "cars")
+                        {
+                            DB.Cars.RemoveAt(id);
+                        }
+                        else if (what == "planes")
+                        {
+                            DB.Planes.RemoveAt(id);
+                        }
+                  }
 
                 switch (choice)
                 {
                     case 0:
-                        if (what == "cars")
-                        {
-                            DB.Cars.RemoveAt(DB.Cars.Count - 1);
-                        }
-                        else if (what == "planes")
-                        {
-                            DB.Planes.RemoveAt(DB.Planes.Count - 1);
-                        }
-
                         break;
                     case 1:
                         if (what == "cars")
                         {
-                            DB.Cars.Add(new Car());
+                            DB.Cars.Insert(id, new Car(id));
                         }
                         else if (what == "planes")
-                            DB.Planes.Add(new Plane());
+                            DB.Planes.Insert(id, new Plane(id));
                         break;
+                    case 2 :
+                        Console.Write("Speed: ");
+                        var par1 = Convert.ToInt32(Console.ReadLine());
+                        Console.Write("Fuel consumation: ");
+                        var par2 = Convert.ToDouble(Console.ReadLine());
+                        Console.Write("Cost of maintaining: ");
+                        var par3 = Convert.ToInt32(Console.ReadLine());
+                        if (what == "cars")
+                        {
+                            Console.Write("Model: ");
+                            var Cpar1 = Console.ReadLine();
+                            Console.Write("Color: ");
+                            var Cpar2 = Console.ReadLine();
+                            DB.Cars.Add(new Car(Cpar1,Cpar2,par1,par2,par3,id));
+                        }
+                        else if (what == "planes"){
+                            Console.Write("Avia company: ");
+                            var Ppar1 = Console.ReadLine();
+                            Console.Write("Amount of turbines: ");
+                            var Ppar2 = Convert.ToInt32(Console.ReadLine());
+                            DB.Planes.Add(new Plane(Ppar1,Ppar2,par1,par2,par3,id));
+                         }
+                    break;
                     default:
-                        Console.WriteLine("Choose 0 or 1");
+                        Console.WriteLine("Choose 0, 1 or 2");
                         break;
                 }
                 WriteDataToFile(DB);
+                ShowDB(DB);
                 Console.Write("If you want to exit, enter 0, or any key to continue: ");
                 if (Convert.ToInt32(Console.ReadLine()) == 0) { break; }
             }
