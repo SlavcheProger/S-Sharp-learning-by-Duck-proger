@@ -20,49 +20,61 @@ namespace TestEF
                 DB = new DataBase();
             }
 
+
             while (true)
             {
-                Console.WriteLine("What do you want to change? ");
+                Console.WriteLine("What do you want to change: car or plane?");
 
-                var what = Console.ReadLine();
+                var what = Console.ReadLine().ToLower(); // нужно привести в какой то единый регистр, например нижний
+                //и я говорил, что надо обрабатывать все то, что вводит пользователь - добавь это
+                Console.WriteLine($"0-remove {what} (by ID)\n1-add default {what} \n2-add {what} with parameters");
+                //так прикольнее :)
 
-                Console.WriteLine("0-remove last item \n1-add default item \n2-add item with parameters");
-
-                var choice = Convert.ToInt32(Console.ReadLine());
+                var choice = Convert.ToInt32(Console.ReadLine());  //крч везде проверку на корректность добавь, иначе будет все крашиться
 
                 var rand = new Random();
-                var id = rand.Next(0,1000);
+                var id = rand.Next(0, 1000);
 
                 switch (choice)
                 {
                     case 0:
-                    try
-                    {
-                        Console.WriteLine("Insert item`s id");
-    
-                        id = Convert.ToInt32(Console.ReadLine());
+                        try
+                        {
+                            if (what == "car" && DB.Cars.Count != 0) // тут была трабла, что ты пытаешься удалить элемент из пустой бд - это тоже надо обрабатывать
+                            {
+                                Console.WriteLine($"Insert {what}`s id");
 
-                        if (what == "cars")
-                        {
-                            DB.Cars.RemoveAt(id);
+                                id = Convert.ToInt32(Console.ReadLine());
+
+                                DB.Cars.RemoveAt(id);
+                            }
+                            else if (what == "plane" && DB.Planes.Count != 0)
+                            {
+                                Console.WriteLine($"Insert {what}`s id");
+
+                                id = Convert.ToInt32(Console.ReadLine());
+
+                                DB.Planes.RemoveAt(id);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Sorry, where is no {what} in DataBase.");
+                            }
                         }
-                        else if (what == "planes")
+                        catch (Exception exception)
                         {
-                            DB.Planes.RemoveAt(id);
+                            Log(exception);
+                            Console.WriteLine($"Wrong {what}`s id! Please, try again.");
+                            // и тогда у тебя не будет проблемы, что пользователь будет вечно пытаться ввести ID для удаления чего-либо из пустой БД (у тебя тут был вечный цикл пока приложение не закрашится)
+                            goto case 0;
                         }
-                    }
-                    catch (Exception exception)
-                    {
-                        Console.WriteLine("wrong item`s id");
-                        goto case 0;
-                    }
                         break;
                     case 1:
-                        if (what == "cars")
+                        if (what == "car")
                         {
                             DB.Cars.Add(new Car(id));
                         }
-                        else if (what == "planes")
+                        else if (what == "plane")
                             DB.Planes.Add(new Plane(id));
                         break;
                     case 2:
@@ -80,7 +92,7 @@ namespace TestEF
                             var cpar2 = Console.ReadLine();
                             DB.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
                         }
-                        else if (what == "planes")
+                        else if (what == "plane")
                         {
                             Console.Write("Avia company: ");
                             var ppar1 = Console.ReadLine();
@@ -95,10 +107,21 @@ namespace TestEF
                 }
                 WriteDataToFile(DB);
                 ShowDB(DB);
-                Console.Write("If you want to exit, enter 0, or any key to continue: ");
-                if (Convert.ToInt32(Console.ReadLine()) == 0) { break; }
-            }
 
+                Console.Write("If you want to exit, enter 0, or any key to continue: ");
+
+                try
+                {
+                    if (Convert.ToInt32(Console.ReadLine()) == 0)
+                    {
+                        break;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Log(exception);
+                }
+            }
             /////////////////////////
             Console.WriteLine("Succeed!");
             Console.ReadKey();
@@ -115,12 +138,12 @@ namespace TestEF
         public static DataBase ReadDB()
         {
             return JsonConvert.DeserializeObject<DataBase>
-                (File.ReadAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json"));
+                (File.ReadAllText(@"..\..\DB\DataBase.json"));
         }
 
         public static void WriteDataToFile(DataBase dB)
         {
-            File.WriteAllText(@"C:\Users\Миша\Desktop\C#\App\TestEF\DB\DataBase.json", JsonConvert.SerializeObject(dB));
+            File.WriteAllText(@"..\..\DB\DataBase.json", JsonConvert.SerializeObject(dB));
         }
 
         public static void ShowDB(DataBase db)
