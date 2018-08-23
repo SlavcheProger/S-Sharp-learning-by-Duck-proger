@@ -24,10 +24,19 @@ namespace TestEF
             while (true)
             {
                 Console.WriteLine("What do you want to change: car or plane?");
-
+                int dumbcount = 0;
+                tryAgain:
                 var what = Console.ReadLine().ToLower();
+                if(what !="car"){
+                        if(what != "plane"){
+                            if(dumbcount>2){Console.Write("R U stupid? ");}
+                            Console.WriteLine("Please, enter \"car\" or \"plane\"");
+                            dumbcount += 1;
+                            goto tryAgain;
+                        }
+                }
                 Console.WriteLine($"0-remove {what} (by ID)\n1-add default {what} \n2-add {what} with parameters");
-
+                theChoice: //флаг для goto, при вводе некорректного значения выбора действия
                 var choice = Convert.ToInt32(Console.ReadLine()); 
 
                 var rand = new Random();
@@ -95,7 +104,7 @@ namespace TestEF
                         var par2 = Convert.ToDouble(Console.ReadLine());
                         Console.Write("Cost of maintaining: ");
                         var par3 = Convert.ToInt32(Console.ReadLine());
-                        if (what == "cars")
+                        if (what == "car")
                         {
                             Console.Write("Model: ");
                             var cpar1 = Console.ReadLine();
@@ -114,12 +123,11 @@ namespace TestEF
                         break;
                     default:
                         Console.WriteLine("Choose 0, 1 or 2");
-                        break;
-                }
-                WriteDataToFile(DB);
-                ShowDB(DB);
-
-                Console.Write("If you want to exit, enter 0, or any key to continue: ");
+                        goto theChoice;
+                }                  
+                        WriteDataToFile(DB);
+                        ShowDB(DB);
+                Console.Write("If you want to exit, enter 0, or press enter key to continue: ");
 
                 try
                 {
@@ -130,7 +138,7 @@ namespace TestEF
                 }
                 catch (Exception exception)
                 {
-                    Log(exception);
+                    //сделал из оибки фичу
                 }
             }
             /////////////////////////
@@ -161,11 +169,11 @@ namespace TestEF
         {
             foreach (var item in db.Cars)
             {
-                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\n*");
+                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
             }
             foreach (var item in db.Planes)
             {
-                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\n*");
+                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
             }
         }
     }
