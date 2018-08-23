@@ -17,6 +17,8 @@ namespace TestEF
             catch (Exception exception)
             {
                 Log(exception);
+                CLog("Data Base missing, creating a new one");
+                FileStream DataBase = File.Create(@"..\..\DB\DataBase.json");
                 DB = new DataBase();
             }
 
