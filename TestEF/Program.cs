@@ -23,19 +23,19 @@ namespace TestEF
 
             while (true)
             {
-                Console.WriteLine("What do you want to change: car or plane?");
+                CLog("What do you want to change: car or plane?");
                 int dumbcount = 0;
                 tryAgain:
                 var what = Console.ReadLine().ToLower();
                 if(what !="car"){
                         if(what != "plane"){
-                            if(dumbcount>2){Console.Write("R U stupid? ");}
-                            Console.WriteLine("Please, enter \"car\" or \"plane\"");
+                            if(dumbcount>2){CLog("R U stupid? ");}
+                            CLog("Please, enter \"car\" or \"plane\"");
                             dumbcount += 1;
                             goto tryAgain;
                         }
                 }
-                Console.WriteLine($"0-remove {what} (by ID)\n1-add default {what} \n2-add {what} with parameters");
+                CLog($"0-remove {what} (by ID)\n1-add default {what} \n2-add {what} with parameters");
                 theChoice: //флаг для goto, при вводе некорректного значения выбора действия
                 var choice = Convert.ToInt32(Console.ReadLine()); 
 
@@ -62,7 +62,7 @@ namespace TestEF
                         {
                             if (what == "car" && DB.Cars.Count != 0) 
                             {
-                                Console.WriteLine($"Insert {what}`s id");
+                                CLog($"Insert {what}`s id");
 
                                 id = Convert.ToInt32(Console.ReadLine());
                                 var that = DB.Cars.FindIndex(x => x.Id == id);
@@ -70,7 +70,7 @@ namespace TestEF
                             }
                             else if (what == "plane" && DB.Planes.Count != 0)
                             {
-                                Console.WriteLine($"Insert {what}`s id");
+                                CLog($"Insert {what}`s id");
 
                                 id = Convert.ToInt32(Console.ReadLine());
 
@@ -79,13 +79,13 @@ namespace TestEF
                             }
                             else
                             {
-                                Console.WriteLine($"Sorry, there is no {what} in DataBase.");
+                                CLog($"Sorry, there is no {what} in DataBase.");
                             }
                         }
                         catch (Exception exception)
                         {
                             Log(exception);
-                            Console.WriteLine($"Wrong {what}`s id! Please, try again.");
+                            CLog($"Wrong {what}`s id! Please, try again.");
                             goto case 0;
                         }
                         break;
@@ -98,36 +98,58 @@ namespace TestEF
                             DB.Planes.Add(new Plane(id));
                         break;
                     case 2:
-                        Console.Write("Speed: ");
-                        var par1 = Convert.ToInt32(Console.ReadLine());
-                        Console.Write("Fuel consumation: ");
-                        var par2 = Convert.ToDouble(Console.ReadLine());
-                        Console.Write("Cost of maintaining: ");
-                        var par3 = Convert.ToInt32(Console.ReadLine());
                         if (what == "car")
                         {
-                            Console.Write("Model: ");
-                            var cpar1 = Console.ReadLine();
-                            Console.Write("Color: ");
-                            var cpar2 = Console.ReadLine();
-                            DB.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
+                            try
+                            {
+                                Console.Write("Speed: ");
+                                var par1 = Convert.ToInt32(Console.ReadLine());
+                                Console.Write("Fuel consumation: ");
+                                var par2 = Convert.ToDouble(Console.ReadLine());
+                                Console.Write("Cost of maintaining: ");
+                                var par3 = Convert.ToInt32(Console.ReadLine());
+                                Console.Write("Model: ");
+                                var cpar1 = Console.ReadLine();
+                                Console.Write("Color: ");
+                                var cpar2 = Console.ReadLine();
+                                DB.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
+                            }
+                            catch (Exception exception)
+                            {
+                            CLog("Incorrect format of the last variable, try again");                            
+                            goto case 2;
+                            }
                         }
                         else if (what == "plane")
                         {
-                            Console.Write("Avia company: ");
-                            var ppar1 = Console.ReadLine();
-                            Console.Write("Amount of turbines: ");
-                            var ppar2 = Convert.ToInt32(Console.ReadLine());
-                            DB.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, id));
+                            try
+                            {
+                                Console.Write("Speed: ");
+                                var par1 = Convert.ToInt32(Console.ReadLine());
+                                Console.Write("Fuel consumation: ");
+                                var par2 = Convert.ToDouble(Console.ReadLine());
+                                Console.Write("Cost of maintaining: ");
+                                var par3 = Convert.ToInt32(Console.ReadLine());
+                                Console.Write("Avia company: ");
+                                var ppar1 = Console.ReadLine();
+                                Console.Write("Amount of turbines: ");
+                                var ppar2 = Convert.ToInt32(Console.ReadLine());
+                                DB.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, id));                               
+                            }
+                            catch (Exception exception)
+                            {
+                            CLog("Incorrect format of the last variable, try again");
+                            goto case 2;
+                            }
                         }
                         break;
                     default:
-                        Console.WriteLine("Choose 0, 1 or 2");
+                        CLog("Choose 0, 1 or 2");
                         goto theChoice;
                 }                  
                         WriteDataToFile(DB);
                         ShowDB(DB);
-                Console.Write("If you want to exit, enter 0, or press enter key to continue: ");
+                CLog("If you want to exit, enter 0, or press enter key to continue: ");
 
                 try
                 {
@@ -138,18 +160,38 @@ namespace TestEF
                 }
                 catch (Exception exception)
                 {
-                    //сделал из оибки фичу
+                    //сделал из ошибки фичу
                 }
             }
             /////////////////////////
-            Console.WriteLine("Succeed!");
-            Console.ReadKey();
         }
 
         public static void Log(Exception exception)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(exception.ToString());
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+
+        public static void CLog(string str)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(str);
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        public static void CarLog(string str)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(str);
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        public static void PlaneLog(string str)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(str);
             Console.ResetColor();
             Console.WriteLine();
         }
@@ -169,11 +211,11 @@ namespace TestEF
         {
             foreach (var item in db.Cars)
             {
-                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
+                CarLog($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
             }
             foreach (var item in db.Planes)
             {
-                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
+                PlaneLog($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
             }
         }
     }
