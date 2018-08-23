@@ -30,36 +30,40 @@ namespace TestEF
 
                 var choice = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Insert item`s id");
-
-                var id = Convert.ToInt32(Console.ReadLine()); //пользователь ввел некое РАНДОМНОЕ число
-
-                if (((choice == 0) | (choice == 1) | (choice == 2))
-                  && (id != DB.Cars.Count)) //не понимаю смысла этой проверки - объясни пж
-                                            //сюда же - ты проверяешь только машины - забыл про самолеты
-                {
-                    if (what == "cars")
-                    {
-                        DB.Cars.RemoveAt(id);
-                    }
-                    else if (what == "planes")
-                    {
-                        DB.Planes.RemoveAt(id);
-                    }
-                }
+                var rand = new Random();
+                var id = rand.Next(0,1000);
 
                 switch (choice)
                 {
                     case 0:
-                        //где код???
+                    try
+                    {
+                        Console.WriteLine("Insert item`s id");
+    
+                        id = Convert.ToInt32(Console.ReadLine());
+
+                        if (what == "cars")
+                        {
+                            DB.Cars.RemoveAt(id);
+                        }
+                        else if (what == "planes")
+                        {
+                            DB.Planes.RemoveAt(id);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine("wrong item`s id");
+                        goto case 0;
+                    }
                         break;
                     case 1:
                         if (what == "cars")
                         {
-                            DB.Cars.Insert(id, new Car(id));
+                            DB.Cars.Add(new Car(id));
                         }
                         else if (what == "planes")
-                            DB.Planes.Insert(id, new Plane(id));
+                            DB.Planes.Add(new Plane(id));
                         break;
                     case 2:
                         Console.Write("Speed: ");
@@ -71,18 +75,18 @@ namespace TestEF
                         if (what == "cars")
                         {
                             Console.Write("Model: ");
-                            var Cpar1 = Console.ReadLine();  //переменные пишем с маленькой буквы - исправить везде
+                            var cpar1 = Console.ReadLine();  //переменные пишем с маленькой буквы - исправить везде
                             Console.Write("Color: ");
-                            var Cpar2 = Console.ReadLine();
-                            DB.Cars.Add(new Car(Cpar1, Cpar2, par1, par2, par3, id));
+                            var cpar2 = Console.ReadLine();
+                            DB.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
                         }
                         else if (what == "planes")
                         {
                             Console.Write("Avia company: ");
-                            var Ppar1 = Console.ReadLine();
+                            var ppar1 = Console.ReadLine();
                             Console.Write("Amount of turbines: ");
-                            var Ppar2 = Convert.ToInt32(Console.ReadLine());
-                            DB.Planes.Add(new Plane(Ppar1, Ppar2, par1, par2, par3, id));
+                            var ppar2 = Convert.ToInt32(Console.ReadLine());
+                            DB.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, id));
                         }
                         break;
                     default:
@@ -123,11 +127,11 @@ namespace TestEF
         {
             foreach (var item in db.Cars)
             {
-                Console.WriteLine($"{item.Speed},{item.CostOfMaintain}, {item.FuelConsum}, {item.Color}, {item.Model}");
+                Console.WriteLine($"{item.Speed},{item.CostOfMaintain}, {item.FuelConsum}, {item.Color}, {item.Model}, {item.Id}");
             }
             foreach (var item in db.Planes)
             {
-                Console.WriteLine($"{item.Speed},{item.CostOfMaintain}, {item.FuelConsum}, {item.AviaComp}, {item.AmountOfTurb}");
+                Console.WriteLine($"{item.Speed},{item.CostOfMaintain}, {item.FuelConsum}, {item.AviaComp}, {item.Id}");
             }
         }
     }
