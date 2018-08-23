@@ -25,28 +25,39 @@ namespace TestEF
             {
                 Console.WriteLine("What do you want to change: car or plane?");
 
-                var what = Console.ReadLine().ToLower(); // нужно привести в какой то единый регистр, например нижний
-                //и я говорил, что надо обрабатывать все то, что вводит пользователь - добавь это
+                var what = Console.ReadLine().ToLower();
                 Console.WriteLine($"0-remove {what} (by ID)\n1-add default {what} \n2-add {what} with parameters");
-                //так прикольнее :)
 
-                var choice = Convert.ToInt32(Console.ReadLine());  //крч везде проверку на корректность добавь, иначе будет все крашиться
+                var choice = Convert.ToInt32(Console.ReadLine()); 
 
                 var rand = new Random();
                 var id = rand.Next(0, 1000);
-
+                if (what == "car")
+                {
+                    while(DB.Cars.Exists(x => x.Id == id))
+                    {
+                        id = rand.Next(0, 1000);
+                    }                            
+                }
+                else if (what == "plane")
+                {
+                    while(DB.Planes.Exists(x => x.Id == id))
+                    {
+                        id = rand.Next(0, 1000);
+                    }   
+                }
                 switch (choice)
                 {
                     case 0:
                         try
                         {
-                            if (what == "car" && DB.Cars.Count != 0) // тут была трабла, что ты пытаешься удалить элемент из пустой бд - это тоже надо обрабатывать
+                            if (what == "car" && DB.Cars.Count != 0) 
                             {
                                 Console.WriteLine($"Insert {what}`s id");
 
                                 id = Convert.ToInt32(Console.ReadLine());
-
-                                DB.Cars.RemoveAt(id);
+                                var that = DB.Cars.FindIndex(x => x.Id == id);
+                                DB.Cars.RemoveAt(that);
                             }
                             else if (what == "plane" && DB.Planes.Count != 0)
                             {
@@ -54,18 +65,18 @@ namespace TestEF
 
                                 id = Convert.ToInt32(Console.ReadLine());
 
-                                DB.Planes.RemoveAt(id);
+                                var that = DB.Planes.FindIndex(x => x.Id == id);
+                                DB.Planes.RemoveAt(that);
                             }
                             else
                             {
-                                Console.WriteLine($"Sorry, where is no {what} in DataBase.");
+                                Console.WriteLine($"Sorry, there is no {what} in DataBase.");
                             }
                         }
                         catch (Exception exception)
                         {
                             Log(exception);
                             Console.WriteLine($"Wrong {what}`s id! Please, try again.");
-                            // и тогда у тебя не будет проблемы, что пользователь будет вечно пытаться ввести ID для удаления чего-либо из пустой БД (у тебя тут был вечный цикл пока приложение не закрашится)
                             goto case 0;
                         }
                         break;
@@ -87,7 +98,7 @@ namespace TestEF
                         if (what == "cars")
                         {
                             Console.Write("Model: ");
-                            var cpar1 = Console.ReadLine();  //переменные пишем с маленькой буквы - исправить везде
+                            var cpar1 = Console.ReadLine();
                             Console.Write("Color: ");
                             var cpar2 = Console.ReadLine();
                             DB.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
@@ -150,11 +161,11 @@ namespace TestEF
         {
             foreach (var item in db.Cars)
             {
-                Console.WriteLine($"{item.Speed},{item.CostOfMaintain}, {item.FuelConsum}, {item.Color}, {item.Model}, {item.Id}");
+                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}");
             }
             foreach (var item in db.Planes)
             {
-                Console.WriteLine($"{item.Speed},{item.CostOfMaintain}, {item.FuelConsum}, {item.AviaComp}, {item.Id}");
+                Console.WriteLine($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}");
             }
         }
     }
