@@ -18,14 +18,15 @@ namespace TestEF
             catch (Exception exception)
             {
                 Log(exception);
-                if(File.Exists(""))
+                if (File.Exists("")) //какой файл существует? любой? где путь к файлу?
                 {
-                   DB = new DataBase();
+                    DB = new DataBase(); // читай ниже
                 }
-                else{
+                else
+                {
                     CLog("Data Base missing, creating a new one");
-                    using (var fs = File.Create(@"..\..\DB\DataBase.json")){}
-                    DB = new DataBase();
+                    using (var fs = File.Create(@"..\..\DB\DataBase.json")) { }
+                    DB = new DataBase(); // почему это строчка в обоих блоках ифа? почему не поставить ее после него? 
                 }
             }
 
@@ -34,7 +35,7 @@ namespace TestEF
                 CLog("What do you want to change: car or plane?");
                 tryAgain:
                 var what = Console.ReadLine().ToLower();
-                if(what !="car" && what != "plane")
+                if (what != "car" && what != "plane")
                 {
                     CLog("Please, enter \"car\" or \"plane\"");
                     goto tryAgain;
@@ -48,17 +49,17 @@ namespace TestEF
 
                 DBChange(id, what, choice);
 
-                     ShowDB(DB);
-                     CLog("If you want to exit, type 0, or press \"enter\" to continue: ");
+                ShowDB(DB);
+                CLog("If you want to exit, type 0, or press \"enter\" to continue: ");
 
-                    if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0)
-                    {
-                        break;
-                    }
+                if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0) // во-первых, т.к. тут нужен один символ, делай ReadKey(). Затем, ты ждешь, что введут 0 или энтер, но пропускаешь дальше при любых символах. исправь это: проверяй на ноль или энтер
+                {
+                    break;
+                }
             }
-            ///////////////////////////////////////////////////////////////////
         }
-        //console color
+        // console color output
+        #region
         //for errors
         public static void Log(Exception exception)
         {
@@ -92,9 +93,9 @@ namespace TestEF
             Console.WriteLine();
         }
         ///////////////////////////////////////
-
-
+        #endregion
         /// operating with DataBase File
+        #region
         public static DataBase ReadDB()
         {
             return JsonConvert.DeserializeObject<DataBase>
@@ -117,12 +118,31 @@ namespace TestEF
                 PlaneLog($"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
             }
         }
+        #endregion
+        // comand handleren
+        #region
+        public static void DBChange(int id, string what, int choice)
+        {
+            switch (choice)
+            {
+                case 1:
+                    RemoveSmth(what);
+                    break;
+                case 2:
+                    AddSmth(id, what);
+                    break;
+                case 3:
+                    AddCustom(id, what);
+                    break;
+            }
+            WriteDataToFile(DB);
+        }
 
         public static void AddCustom(int id, string what)
         {
             retry:
             try
-            {    
+            {
                 Console.Write("Speed: ");
                 var par1 = Convert.ToInt32(Console.ReadLine());
                 Console.Write("Fuel consumation: ");
@@ -147,8 +167,8 @@ namespace TestEF
             }
             catch (Exception exception)
             {
-            CLog("Incorrect format of the last variable, try again");
-            goto retry;
+                CLog("Incorrect format of the last variable, try again");
+                goto retry;
             }
         }
 
@@ -159,7 +179,7 @@ namespace TestEF
                 DB.Cars.Add(new Car(id));
             }
             else if (what == "plane")
-            DB.Planes.Add(new Plane(id));
+                DB.Planes.Add(new Plane(id));
         }
 
         public static void RemoveSmth(string what)
@@ -167,12 +187,13 @@ namespace TestEF
             retry:
             var input = "";
             try
-            {   
+            {
+                // если у тебя нету в бд item'ов нужной категории (what), то ты не должен запрашивать id, а написать, что в бд нет их. я кст это уже правил, но кто-то это сломал ;) 
                 CLog($"Insert {what}`s id, or type \"exit\" to cancel");
                 input = Console.ReadLine();
                 var id = Convert.ToInt32(input);
 
-                if (what == "car" && DB.Cars.Count != 0) 
+                if (what == "car" && DB.Cars.Count != 0)
                 {
                     var that = DB.Cars.FindIndex(x => x.Id == id);
                     DB.Cars.RemoveAt(that);
@@ -188,64 +209,55 @@ namespace TestEF
                 }
             }
             catch (Exception exception)
-            {   
-                if(input != "exit")
+            {
+                if (input != "exit") // проверку на выход сделай в try
                 {
                     CLog($"Wrong {what}`s id! Please, try again.");
                     goto retry;
                 }
             }
         }
-
-        public static void DBChange(int id, string what, int choice)
-        {
-                        switch (choice)
-                {
-                    case 1:
-                        RemoveSmth(what);
-                        break;
-                    case 2:
-                        AddSmth(id, what);
-                        break;
-                    case 3:
-                        AddCustom(id, what);
-                        break;
-                }                  
-                     WriteDataToFile(DB);
-        }
-        /////////////////////////////
+        #endregion
+        // another
+        #region
         public static int RandId(string what)
         {
             var rand = new Random();
             var id = rand.Next(0, 1000);
             if (what == "car")
             {
-                while(DB.Cars.Exists(x => x.Id == id))
+                while (DB.Cars.Exists(x => x.Id == id))
                 {
                     id = rand.Next(0, 1000);
-                }                            
+                }
             }
             else if (what == "plane")
             {
-                while(DB.Planes.Exists(x => x.Id == id))
+                while (DB.Planes.Exists(x => x.Id == id))
                 {
                     id = rand.Next(0, 1000);
-                }   
+                }
             }
             return id;
         }
 
         public static int Choose()
         {
-            theChoice: 
+            theChoice:
 
-            var result = Int32.TryParse(Console.ReadLine(),out int choice); 
-            if( !result || choice != 1 && choice != 2 && choice != 3 )
+            var result = Int32.TryParse(Console.ReadLine(), out int choice);
+            if (!result || choice != 1 && choice != 2 && choice != 3)
             {
-            CLog("Choose 1, 2 or 3");
-            goto theChoice;
+                CLog("Choose 1, 2 or 3");
+                goto theChoice;
             }
             return choice;
         }
+        #endregion
     }
 }
+
+// TODO: основные правки в коде
+// TODO: добавь метод LoadDB(). Он будет считывать BD из файла и возвращать ее. если она пустая или файла не существует, то создается новый объект DataBase (и он же возвращается). и используй этот метод при загрузки бд при запуске программы.
+// TODO: 33-59 вынеси в отдельный метод, который будет отвечать за основной функционал приложения. 
+// TODO: сделай нормальные названия переменных и методов, чтобы человек, посмотрев на название, мог понять, за что оно отвечает.
