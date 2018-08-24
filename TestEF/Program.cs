@@ -7,11 +7,23 @@ namespace TestEF
     public class Program
     {
         public static DataBase DB;
-
+        // теперь метод Main выглядит, как должен выглядеть :)
         static void Main(string[] args)
         {
-            DB = LoadDB();
-            ProgExecute();
+            try
+            {
+                DB = LoadDB();
+                ProgExecute();
+            }
+            catch (Exception exception)
+            {
+                Log(exception);
+            }
+            finally
+            {
+                Console.Write("Press any key to quit: ");
+                Console.ReadKey();
+            }
         }
         // console color output
         #region
@@ -65,9 +77,9 @@ namespace TestEF
                 {
                     CLog("Data Base missing, creating a new one");
                     using (var fs = File.Create(@"..\..\DB\DataBase.json")) { }
+                    DB = new DataBase();
                 }
             }
-            DB = new DataBase();
             return DB;
         }
 
@@ -120,10 +132,10 @@ namespace TestEF
                 ShowDB(DB);
                 CLog("If you want to exit, type 0, or anything else to continue: ");
 
-                 if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0)
-                 {
-                     break;
-                 }
+                if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0)
+                {
+                    break;
+                }
             }
         }
 
@@ -198,7 +210,8 @@ namespace TestEF
                 {
                     CLog($"Insert {what}`s id, or type \"exit\" to cancel");
                     input = Console.ReadLine();
-                    if (input != "exit"){
+                    if (input != "exit")
+                    {
                         var id = Convert.ToInt32(input);
                         var that = DB.Cars.FindIndex(x => x.Id == id);
                         DB.Cars.RemoveAt(that);
@@ -208,7 +221,8 @@ namespace TestEF
                 {
                     CLog($"Insert {what}`s id, or type \"exit\" to cancel");
                     input = Console.ReadLine();
-                    if (input != "exit"){
+                    if (input != "exit")
+                    {
                         var id = Convert.ToInt32(input);
                         var that = DB.Planes.FindIndex(x => x.Id == id);
                         DB.Planes.RemoveAt(that);
@@ -221,8 +235,8 @@ namespace TestEF
             }
             catch (Exception exception)
             {
-                    CLog($"Wrong {what}`s id! Please, try again.");
-                    goto retry;
+                CLog($"Wrong {what}`s id! Please, try again.");
+                goto retry;
             }
         }
         #endregion
@@ -266,7 +280,7 @@ namespace TestEF
     }
 }
 
-// |+| TODO: основные правки в коде
-// |+| TODO: добавь метод LoadDB(). Он будет считывать BD из файла и возвращать ее. если она пустая или файла не существует, то создается новый объект DataBase (и он же возвращается). и используй этот метод при загрузки бд при запуске программы.
-// |+| TODO: 33-59 вынеси в отдельный метод, который будет отвечать за основной функционал приложения. 
-// |-?| TODO: сделай нормальные названия переменных и методов, чтобы человек, посмотрев на название, мог понять, за что оно отвечает.
+// TODO: основные правки в коде
+// TODO: переделай метод RemoveSmth. тут много повторяющегося кода - исправь это.
+// TODO: из всех цветных выводов в консоль сделай один метод, который принимает 2 параметра : ошибку и цвет. ну и соответственно в коде это исправь. ну и тогда перенеси его к прочим методам.
+// TODO: сделай НОРМАЛЬНЫЕ названия переменных и методов, чтобы человек, посмотрев на название, МОГ ПОНЯТЬ, за что оно отвечает.
