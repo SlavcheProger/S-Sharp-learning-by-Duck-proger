@@ -10,53 +10,8 @@ namespace TestEF
 
         static void Main(string[] args)
         {
-            try
-            {
-                DB = ReadDB();
-                ShowDB(DB);
-            }
-            catch (Exception exception)
-            {
-                Log(exception);
-                if (File.Exists("")) //какой файл существует? любой? где путь к файлу?
-                {
-                    DB = new DataBase(); // читай ниже
-                }
-                else
-                {
-                    CLog("Data Base missing, creating a new one");
-                    using (var fs = File.Create(@"..\..\DB\DataBase.json")) { }
-                    DB = new DataBase(); // почему это строчка в обоих блоках ифа? почему не поставить ее после него? 
-                }
-            }
-
-            while (true)
-            {
-                CLog("What do you want to change: car or plane?");
-                tryAgain:
-                var what = Console.ReadLine().ToLower();
-                if (what != "car" && what != "plane")
-                {
-                    CLog("Please, enter \"car\" or \"plane\"");
-                    goto tryAgain;
-                }
-
-                CLog($"1-remove {what} (by ID)\n2-add default {what} \n3-add {what} with parameters");
-
-                var choice = Choose();
-
-                var id = RandId(what);
-
-                DBChange(id, what, choice);
-
-                ShowDB(DB);
-                CLog("If you want to exit, type 0, or press \"enter\" to continue: ");
-
-                if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0) // во-первых, т.к. тут нужен один символ, делай ReadKey(). Затем, ты ждешь, что введут 0 или энтер, но пропускаешь дальше при любых символах. исправь это: проверяй на ноль или энтер
-                {
-                    break;
-                }
-            }
+            DB = LoadDB();
+            ProgExecute();
         }
         // console color output
         #region
@@ -96,6 +51,26 @@ namespace TestEF
         #endregion
         /// operating with DataBase File
         #region
+        public static DataBase LoadDB()
+        {
+            try
+            {
+                DB = ReadDB();
+                ShowDB(DB);
+            }
+            catch (Exception exception)
+            {
+                Log(exception);
+                if (!File.Exists(@"..\..\DB\DataBase.json"))
+                {
+                    CLog("Data Base missing, creating a new one");
+                    using (var fs = File.Create(@"..\..\DB\DataBase.json")) { }
+                }
+            }
+            DB = new DataBase();
+            return DB;
+        }
+
         public static DataBase ReadDB()
         {
             return JsonConvert.DeserializeObject<DataBase>
@@ -119,8 +94,39 @@ namespace TestEF
             }
         }
         #endregion
-        // comand handleren
+        // Programm execute
         #region
+        public static void ProgExecute()
+        {
+            while (true)
+            {
+                CLog("What do you want to change: car or plane?");
+                tryAgain:
+                var what = Console.ReadLine().ToLower();
+                if (what != "car" && what != "plane")
+                {
+                    CLog("Please, enter \"car\" or \"plane\"");
+                    goto tryAgain;
+                }
+
+                CLog($"1-remove {what} (by ID)\n2-add default {what} \n3-add {what} with parameters");
+
+                var choice = Choose();
+
+                var id = RandId(what);
+
+                DBChange(id, what, choice);
+
+                ShowDB(DB);
+                CLog("If you want to exit, type 0, or anything else to continue: ");
+
+                 if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0)
+                 {
+                     break;
+                 }
+            }
+        }
+
         public static void DBChange(int id, string what, int choice)
         {
             switch (choice)
@@ -188,20 +194,25 @@ namespace TestEF
             var input = "";
             try
             {
-                // если у тебя нету в бд item'ов нужной категории (what), то ты не должен запрашивать id, а написать, что в бд нет их. я кст это уже правил, но кто-то это сломал ;) 
-                CLog($"Insert {what}`s id, or type \"exit\" to cancel");
-                input = Console.ReadLine();
-                var id = Convert.ToInt32(input);
-
                 if (what == "car" && DB.Cars.Count != 0)
                 {
-                    var that = DB.Cars.FindIndex(x => x.Id == id);
-                    DB.Cars.RemoveAt(that);
+                    CLog($"Insert {what}`s id, or type \"exit\" to cancel");
+                    input = Console.ReadLine();
+                    if (input != "exit"){
+                        var id = Convert.ToInt32(input);
+                        var that = DB.Cars.FindIndex(x => x.Id == id);
+                        DB.Cars.RemoveAt(that);
+                    }
                 }
                 else if (what == "plane" && DB.Planes.Count != 0)
                 {
-                    var that = DB.Planes.FindIndex(x => x.Id == id);
-                    DB.Planes.RemoveAt(that);
+                    CLog($"Insert {what}`s id, or type \"exit\" to cancel");
+                    input = Console.ReadLine();
+                    if (input != "exit"){
+                        var id = Convert.ToInt32(input);
+                        var that = DB.Planes.FindIndex(x => x.Id == id);
+                        DB.Planes.RemoveAt(that);
+                    }
                 }
                 else
                 {
@@ -210,15 +221,12 @@ namespace TestEF
             }
             catch (Exception exception)
             {
-                if (input != "exit") // проверку на выход сделай в try
-                {
                     CLog($"Wrong {what}`s id! Please, try again.");
                     goto retry;
-                }
             }
         }
         #endregion
-        // another
+        // Misc
         #region
         public static int RandId(string what)
         {
@@ -254,10 +262,11 @@ namespace TestEF
             return choice;
         }
         #endregion
+
     }
 }
 
-// TODO: основные правки в коде
-// TODO: добавь метод LoadDB(). Он будет считывать BD из файла и возвращать ее. если она пустая или файла не существует, то создается новый объект DataBase (и он же возвращается). и используй этот метод при загрузки бд при запуске программы.
-// TODO: 33-59 вынеси в отдельный метод, который будет отвечать за основной функционал приложения. 
-// TODO: сделай нормальные названия переменных и методов, чтобы человек, посмотрев на название, мог понять, за что оно отвечает.
+// |+| TODO: основные правки в коде
+// |+| TODO: добавь метод LoadDB(). Он будет считывать BD из файла и возвращать ее. если она пустая или файла не существует, то создается новый объект DataBase (и он же возвращается). и используй этот метод при загрузки бд при запуске программы.
+// |+| TODO: 33-59 вынеси в отдельный метод, который будет отвечать за основной функционал приложения. 
+// |-?| TODO: сделай нормальные названия переменных и методов, чтобы человек, посмотрев на название, мог понять, за что оно отвечает.
