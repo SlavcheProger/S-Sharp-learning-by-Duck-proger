@@ -1,0 +1,11 @@
+System.ArgumentOutOfRangeException: Индекс за пределами диапазона. Индекс должен быть положительным числом, а его размер не должен превышать размер коллекции.
+Имя параметра: index
+   в System.ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+   в System.Collections.Generic.List`1.RemoveAt(Int32 index)
+   в TestEF.Controllers.Misc.TestOnInput(String itemType, DataBase DB) в C:\Users\Миша\Desktop\C#\App\TestEF\Controllers\Misc.cs:строка 56
+   в TestEF.Controllers.AppController.RemoveItemById(String itemType, DataBase DB) в C:\Users\Миша\Desktop\C#\App\TestEF\Controllers\AppController.cs:строка 108System.FormatException: Входная строка имела неверный формат.
+   в System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   в System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   в System.Convert.ToInt32(String value)
+   в TestEF.Controllers.Misc.TestOnInput(String itemType, DataBase DB) в C:\Users\Миша\Desktop\C#\App\TestEF\Controllers\Misc.cs:строка 47
+   в TestEF.Controllers.AppController.RemoveItemById(String itemType, DataBase DB) в C:\Users\Миша\Desktop\C#\App\TestEF\Controllers\AppController.cs:строка 108

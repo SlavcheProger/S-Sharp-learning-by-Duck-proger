@@ -52,11 +52,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Car.cs" />
-    <Compile Include="DataBase.cs" />
-    <Compile Include="Plane.cs" />
+    <Compile Include="Controllers\AppController.cs" />
+    <Compile Include="Controllers\DataBaseController.cs" />
+    <Compile Include="Controllers\Log.cs" />
+    <Compile Include="Controllers\Misc.cs" />
+    <Compile Include="DataTypes\Car.cs" />
+    <Compile Include="DataTypes\DataBase.cs" />
+    <Compile Include="DataTypes\Plane.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Transport.cs" />
+    <Compile Include="DataTypes\Transport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
