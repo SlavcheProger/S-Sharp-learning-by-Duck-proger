@@ -18,7 +18,8 @@ namespace TestEF.Controllers
                     goto tryAgain;
                 }
 
-                Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {itemType} (by ID)\n2-add default {itemType} \n3-add {itemType} with parameters");
+                Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {itemType} (by ID)\n2-add default {itemType}" +
+                    $" \n3-add {itemType} with parameters \n4-search info about the {itemType} in DataBase");
 
                 var choice = Misc.ChoiseHandler();
 
@@ -48,6 +49,9 @@ namespace TestEF.Controllers
                     break;
                 case 3:
                     AddNewCustomItem(id, itemType, DB);
+                    break;
+                case 4:
+                    SearchForItem(id, itemType, DB);
                     break;
             }
             DataBaseController.WriteDataToFile(DB);
@@ -117,6 +121,30 @@ namespace TestEF.Controllers
                 Log.WriteToLog(exception.ToString());
                 Log.ConsoleLog(ConsoleColor.Yellow, $"Wrong {itemType}`s id! Please, try again.");
                 goto retry;
+            }
+        }
+
+        public static void SearchForItem(int id, string itemType, DataBase DB)
+        {
+            if (itemType == "car" && DB.Cars.Exists(x => x.Id == id))
+            {
+                foreach (var item in DB.Cars)
+                {
+                    if (item.Id == id)
+                    {
+                        Log.ConsoleLog(ConsoleColor.Cyan, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
+                    }
+                }
+            }
+            else if (itemType == "plane" && DB.Planes.Exists(x => x.Id == id))
+            {
+                foreach (var item in DB.Planes)
+                {
+                    if (item.Id == id)
+                    {
+                        Log.ConsoleLog(ConsoleColor.Red, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
+                    }
+                }
             }
         }
     }
