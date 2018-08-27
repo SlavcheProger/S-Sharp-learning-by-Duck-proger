@@ -6,7 +6,7 @@ namespace TestEF.Controllers
 {
     class DataBaseController
     {
-        public static DataBase LoadDB(DataBase DB)
+        public static DataBase LoadDB(DataBase DB) // зачем сюда передавтаь бд?
         {
             try
             {

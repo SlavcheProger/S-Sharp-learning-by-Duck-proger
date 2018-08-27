@@ -13,7 +13,7 @@ namespace TestEF.Controllers
             Console.WriteLine();
         }
 
-        public static void WriteToLog(String error )
+        public static void WriteToLog(String error)
         {
             File.AppendAllText(@"..\..\Log.txt", error);
         }

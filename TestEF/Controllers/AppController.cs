@@ -37,7 +37,7 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void CommandHandler(int id, string itemType, int choice, DataBase DB)
+        public static void CommandHandler(int id, string itemType, int choice, DataBase DB) // передавать енам значение
         {
             switch (choice)
             {
@@ -57,7 +57,7 @@ namespace TestEF.Controllers
             DataBaseController.WriteDataToFile(DB);
         }
 
-        public static void AddNewCustomItem(int id, string itemType, DataBase DB)
+        public static void AddNewCustomItem(int id, string itemType, DataBase DB) // передавать енам значение
         {
         retry:
             try
@@ -68,7 +68,7 @@ namespace TestEF.Controllers
                 var par2 = Convert.ToDouble(Console.ReadLine());
                 Console.Write("Cost of maintaining: ");
                 var par3 = Convert.ToInt32(Console.ReadLine());
-                if (itemType == "car")
+                if (itemType == "car") // переделать на switch-case
                 {
                     Console.Write("Model: ");
                     var cpar1 = Console.ReadLine();
@@ -92,9 +92,9 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void AddNewDefaultItem(int id, string itemType, DataBase DB)
+        public static void AddNewDefaultItem(int id, string itemType, DataBase DB) // передавать енам значение
         {
-            if (itemType == "car")
+            if (itemType == "car") // переделать на switch-case
             {
                 DB.Cars.Add(new Car(id));
             }
@@ -102,7 +102,7 @@ namespace TestEF.Controllers
                 DB.Planes.Add(new Plane(id));
         }
 
-        public static void RemoveItemById(string itemType, DataBase DB)
+        public static void RemoveItemById(string itemType, DataBase DB) // передавать енам значение
         {
         retry:
             try
@@ -124,9 +124,10 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void SearchForItem(int id, string itemType, DataBase DB)
+        public static void SearchForItem(int id, string itemType, DataBase DB) // передавать енам значение
+                                                                               // переименовать в GetItemById
         {
-            if (itemType == "car" && DB.Cars.Exists(x => x.Id == id))
+            if (itemType == "car" && DB.Cars.Exists(x => x.Id == id)) // switch-case
             {
                 foreach (var item in DB.Cars)
                 {

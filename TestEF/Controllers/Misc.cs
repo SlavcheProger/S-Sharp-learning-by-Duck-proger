@@ -8,7 +8,7 @@ namespace TestEF.Controllers
         {
             var rand = new Random();
             var id = rand.Next(0, 1000);
-            if (itemType == "car")
+            if (itemType == "car") // switch-case
             {
                 while (DB.Cars.Exists(x => x.Id == id))
                 {
@@ -38,7 +38,7 @@ namespace TestEF.Controllers
             return choice;
         }
 
-        public static void TestOnInput(string itemType, DataBase DB)
+        public static void TestOnInput(string itemType, DataBase DB) // передавать енам значение
         {
             Log.ConsoleLog(ConsoleColor.Yellow, $"Insert {itemType}`s id, or type \"exit\" to cancel");
             var input = Console.ReadLine();
