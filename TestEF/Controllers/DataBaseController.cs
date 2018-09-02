@@ -25,7 +25,7 @@ namespace TestEF.Controllers
             }
             return DB;
         }
-
+        
         public static DataBase ReadDB()
         {
             return JsonConvert.DeserializeObject<DataBase>

@@ -4,12 +4,12 @@ using System.Data.Entity;
 
 namespace TestEF
 {
-    class TransportContext : DbContext
+    public class TransportContext : DbContext
     {
         public TransportContext()
             : base("DbConnection")
         { }
 
-        public DbSet<DataBase> Transport { get; set; }
+        public DbSet<Car> Cars { get; set; }
     }
 }
