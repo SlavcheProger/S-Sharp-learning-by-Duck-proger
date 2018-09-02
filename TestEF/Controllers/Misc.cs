@@ -1,21 +1,22 @@
 ﻿using System;
+using static TestEF.Controllers.AppController;
 
 namespace TestEF.Controllers
 {
     class Misc
     {
-        public static int CreateRandomId(string itemType, DataBase DB)
+        public static int CreateRandomId(Item itemType, DataBase DB)
         {
             var rand = new Random();
             var id = rand.Next(0, 1000);
-            if (itemType == "car") // switch-case
+            if (itemType == Item.car) // switch-case
             {
                 while (DB.Cars.Exists(x => x.Id == id))
                 {
                     id = rand.Next(0, 1000);
                 }
             }
-            else if (itemType == "plane")
+            else if (itemType == Item.plane)
             {
                 while (DB.Planes.Exists(x => x.Id == id))
                 {
@@ -38,19 +39,19 @@ namespace TestEF.Controllers
             return choice;
         }
 
-        public static void TestOnInput(string itemType, DataBase DB) // передавать енам значение
+        public static void TestOnInput(Item itemType, DataBase DB) // передавать енам значение
         {
             Log.ConsoleLog(ConsoleColor.Yellow, $"Insert {itemType}`s id, or type \"exit\" to cancel");
             var input = Console.ReadLine();
             if (input != "exit")
             {
                 var id = Convert.ToInt32(input);
-                if (itemType == "car")
+                if (itemType == Item.car)
                 {
                     var indexOfTheItem = DB.Cars.FindIndex(x => x.Id == id);
                     DB.Cars.RemoveAt(indexOfTheItem);
                 }
-                else if (itemType == "plane")
+                else if (itemType == Item.plane)
                 {
                     var IndexOfTheItem = DB.Planes.FindIndex(x => x.Id == id);
                     DB.Planes.RemoveAt(IndexOfTheItem);

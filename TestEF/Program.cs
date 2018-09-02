@@ -13,7 +13,7 @@ namespace TestEF
             File.Delete(@"..\..\Log.txt");
             try
             {
-                DB = DataBaseController.LoadDB(DB); //зачем тебе тут передавть бд, если этот метод считывает и возвращает бд из файла?
+                DB = DataBaseController.LoadDB(DB);
                 AppController.ProgExecute(DB);
             }
             catch (Exception exception)
