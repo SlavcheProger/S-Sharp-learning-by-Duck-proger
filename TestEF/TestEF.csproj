@@ -57,8 +57,12 @@
     <Compile Include="Controllers\Log.cs" />
     <Compile Include="Controllers\Misc.cs" />
     <Compile Include="DataTypes\Car.cs" />
-    <Compile Include="DataTypes\DataBase.cs" />
     <Compile Include="DataTypes\Plane.cs" />
+    <Compile Include="Migrations\201809020805342_InitialCreate.cs" />
+    <Compile Include="Migrations\201809020805342_InitialCreate.Designer.cs">
+      <DependentUpon>201809020805342_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="DataTypes\Transport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,8 +72,12 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="DB\DataBase.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201809020805342_InitialCreate.resx">
+      <DependentUpon>201809020805342_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

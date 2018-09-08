@@ -6,38 +6,15 @@ namespace TestEF.Controllers
 {
     class DataBaseController
     {
-        public static DataBase LoadDB(DataBase DB) // зачем сюда передавтаь бд?
-        {
-            try
-            {
-                DB = ReadDB();
-                ShowDB(DB);
-            }
-            catch (Exception exception)
-            {
-                Log.ConsoleLog(ConsoleColor.Green, exception.ToString());
-                if (!File.Exists(@"..\..\DB\DataBase.json"))
-                {
-                    Log.ConsoleLog(ConsoleColor.Yellow, "Data Base missing, creating a new one");
-                    using (var fs = File.Create(@"..\..\DB\DataBase.json")) { }
-                    DB = new DataBase();
-                }
-            }
-            return DB;
+        public static TransportContext LoadDB() {
+            return new TransportContext();
         }
-        
-        public static DataBase ReadDB()
-        {
-            return JsonConvert.DeserializeObject<DataBase>
-                (File.ReadAllText(@"..\..\DB\DataBase.json"));
-        }
-
-        public static void WriteDataToFile(DataBase dB)
+        public static void WriteDataToFile(TransportContext  dB)
         {
             File.WriteAllText(@"..\..\DB\DataBase.json", JsonConvert.SerializeObject(dB));
         }
 
-        public static void ShowDB(DataBase db)
+        public static void ShowDB(TransportContext  db)
         {
             foreach (var itemType in db.Cars)
             {

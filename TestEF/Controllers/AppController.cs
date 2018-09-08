@@ -5,31 +5,34 @@ namespace TestEF.Controllers
 {
     class AppController
     {
-        public enum Item {car = 1, plane = 2};
-        public static void ProgExecute(DataBase DB)
+        public enum Item { car = 1, plane = 2 };
+        public static TransportContext db;
+        public static void ProgExecute()
         {
+
+            db = DataBaseController.LoadDB();
             while (true)
             {
                 Log.ConsoleLog(ConsoleColor.Yellow, "what do you want to change: car or plane?");
-                tryAgain:
+            tryAgain:
                 var itemInput = Console.ReadLine().ToLower();
                 if (itemInput != "car" && itemInput != "plane")
                 {
                     Log.ConsoleLog(ConsoleColor.Yellow, "Please, enter \"car\" or \"plane\"");
                     goto tryAgain;
                 }
-                Item itemType = (Item)Enum.Parse(typeof(Item), itemInput);
+                Item TransportType = (Item)Enum.Parse(typeof(Item), itemInput);
 
-                Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {itemType} (by ID)\n2-add default {itemType}" +
-                    $" \n3-add {itemType} with parameters \n4-search info about the {itemType} in DataBase");
+                Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {TransportType} (by ID)\n2-add default {TransportType}" +
+                    $" \n3-add {TransportType} with parameters \n4-search info about the {TransportType} in DataBase");
 
                 var choice = Misc.ChoiseHandler();
 
-                var id = Misc.CreateRandomId(itemType, DB);
+                var id = Misc.FindId(TransportType);
 
-                CommandHandler(id, itemType, choice, DB);
+                CommandHandler(id, TransportType, choice, db);
 
-                DataBaseController.ShowDB(DB);
+                DataBaseController.ShowDB(db);
                 Log.ConsoleLog(ConsoleColor.Yellow, "If you want to exit, type 0, or anything else to continue: ");
 
                 if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0)
@@ -39,27 +42,27 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void CommandHandler(int id, Item itemType, int choice, DataBase DB) // передавать енам значение
+        public static void CommandHandler(int id, Item TransportType, int choice, TransportContext db)
         {
             switch (choice)
             {
                 case 1:
-                    RemoveItemById(itemType, DB);
+                    RemoveItemById(TransportType, db);
                     break;
                 case 2:
-                    AddNewDefaultItem(id, itemType, DB);
+                    AddNewDefaultItem(id, TransportType, db);
                     break;
                 case 3:
-                    AddNewCustomItem(id, itemType, DB);
+                    AddNewCustomItem(id, TransportType, db);
                     break;
                 case 4:
-                    SearchForItem(id, itemType, DB);
+                    GetItemById(id, TransportType, db);
                     break;
             }
-            DataBaseController.WriteDataToFile(DB);
+            DataBaseController.WriteDataToFile(db);
         }
 
-        public static void AddNewCustomItem(int id, Item itemType, DataBase DB) // передавать енам значение
+        public static void AddNewCustomItem(int id, Item TransportType, TransportContext db)
         {
         retry:
             try
@@ -70,20 +73,20 @@ namespace TestEF.Controllers
                 var par2 = Convert.ToDouble(Console.ReadLine());
                 Console.Write("Cost of maintaining: ");
                 var par3 = Convert.ToInt32(Console.ReadLine());
-                if (itemType == Item.car) // переделать на switch-case
+                if (TransportType == Item.car) // переделать на switch-case
                 {
                     Console.Write("Model: ");
                     var cpar1 = Console.ReadLine();
                     Console.Write("Color: ");
                     var cpar2 = Console.ReadLine();
-                    DB.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
+                    db.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
                 }
-                else if (itemType == Item.plane)
+                else if (TransportType == Item.plane)
                 {
                     var ppar1 = Console.ReadLine();
                     Console.Write("Amount of turbines: ");
                     var ppar2 = Convert.ToInt32(Console.ReadLine());
-                    DB.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, id));
+                    db.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, id));
                 }
             }
             catch (Exception exception)
@@ -94,60 +97,71 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void AddNewDefaultItem(int id, Item itemType, DataBase DB) // передавать енам значение
+        public static void AddNewDefaultItem(int id, Item TransportType, TransportContext db) // передавать енам значение
         {
-            if (itemType == Item.car) // переделать на switch-case
+            if (TransportType == Item.car) // переделать на switch-case
             {
-                DB.Cars.Add(new Car(id));
+                db.Cars.Add(new Car(id));
             }
-            else if (itemType == Item.plane)
-                DB.Planes.Add(new Plane(id));
+            else if (TransportType == Item.plane)
+                db.Planes.Add(new Plane(id));
         }
 
-        public static void RemoveItemById(Item itemType, DataBase DB) // передавать енам значение
+        public static void RemoveItemById(Item TransportType, TransportContext db) // передавать енам значение
         {
         retry:
             try
             {
-                if ((itemType == Item.car && DB.Cars.Count != 0) || (itemType == Item.plane && DB.Planes.Count != 0))
+                if ((TransportType == Item.car && db.Cars.Count() != 0) || (TransportType == Item.plane && db.Planes.Count() != 0))
                 {
-                    Misc.TestOnInput(itemType, DB);
+                    Misc.TestOnInput(TransportType, db);
                 }
                 else
                 {
-                    Log.ConsoleLog(ConsoleColor.Yellow, $"Sorry, there is no {itemType} in DataBase.");
+                    Log.ConsoleLog(ConsoleColor.Yellow, $"Sorry, there is no {TransportType} in DataBase.");
                 }
             }
             catch (Exception exception)
             {
                 Log.WriteToLog(exception.ToString());
-                Log.ConsoleLog(ConsoleColor.Yellow, $"Wrong {itemType}`s id! Please, try again.");
+                Log.ConsoleLog(ConsoleColor.Yellow, $"Wrong {TransportType}`s id! Please, try again.");
                 goto retry;
             }
         }
 
-        public static void SearchForItem(int id, Item itemType, DataBase DB) // передавать енам значение
-                                                                               // переименовать в GetItemById
+        public static void GetItemById(int id, Item TransportType, TransportContext db)
         {
-            if (itemType == Item.car && DB.Cars.Exists(x => x.Id == id)) // switch-case
+        reEnter:
+            try
             {
-                foreach (var item in DB.Cars)
+                switch (TransportType)
                 {
-                    if (item.Id == id)
-                    {
-                        Log.ConsoleLog(ConsoleColor.Cyan, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
-                    }
+                    case Item.car:
+                        foreach (var item in db.Cars)
+                        {
+                            if (item.Id == id)
+                            {
+                                Log.ConsoleLog(ConsoleColor.Cyan, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
+                            }
+                        }
+
+                        break;
+                    case Item.plane:
+                        foreach (var item in db.Planes)
+                        {
+                            if (item.Id == id)
+                            {
+                                Log.ConsoleLog(ConsoleColor.Red, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
+                            }
+                        }
+
+                        break;
                 }
             }
-            else if (itemType == Item.plane && DB.Planes.Exists(x => x.Id == id))
+            catch (Exception)
             {
-                foreach (var item in DB.Planes)
-                {
-                    if (item.Id == id)
-                    {
-                        Log.ConsoleLog(ConsoleColor.Red, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
-                    }
-                }
+
+                goto reEnter;
             }
         }
     }

@@ -1,30 +1,30 @@
 ﻿using System;
 using static TestEF.Controllers.AppController;
+using System.Linq;
 
 namespace TestEF.Controllers
 {
     class Misc
     {
-        public static int CreateRandomId(Item itemType, DataBase DB)
+        public static int FindId(Item TransportType)
         {
-            var rand = new Random();
-            var id = rand.Next(0, 1000);
-            if (itemType == Item.car) // switch-case
+            int id;
+            switch (TransportType)
             {
-                while (DB.Cars.Exists(x => x.Id == id))
-                {
-                    id = rand.Next(0, 1000);
-                }
+                default:
+                case Item.car:
+                    id = db.Cars.Count();
+                    break;
+                case Item.plane:
+                    id = db.Planes.Count();
+                    break;
             }
-            else if (itemType == Item.plane)
-            {
-                while (DB.Planes.Exists(x => x.Id == id))
-                {
-                    id = rand.Next(0, 1000);
-                }
-            }
+
             return id;
         }
+
+        
+
 
         public static int ChoiseHandler()
         {
@@ -39,22 +39,30 @@ namespace TestEF.Controllers
             return choice;
         }
 
-        public static void TestOnInput(Item itemType, DataBase DB) // передавать енам значение
+        public static void TestOnInput(Item TransportType, TransportContext DB)
         {
-            Log.ConsoleLog(ConsoleColor.Yellow, $"Insert {itemType}`s id, or type \"exit\" to cancel");
+            Log.ConsoleLog(ConsoleColor.Yellow, $"Insert {TransportType}`s id, or type \"exit\" to cancel");
             var input = Console.ReadLine();
             if (input != "exit")
             {
                 var id = Convert.ToInt32(input);
-                if (itemType == Item.car)
+                switch (TransportType)
                 {
-                    var indexOfTheItem = DB.Cars.FindIndex(x => x.Id == id);
-                    DB.Cars.RemoveAt(indexOfTheItem);
-                }
-                else if (itemType == Item.plane)
-                {
-                    var IndexOfTheItem = DB.Planes.FindIndex(x => x.Id == id);
-                    DB.Planes.RemoveAt(IndexOfTheItem);
+                    case Item.car:
+                        var CarForDeletion = db.Cars.Find(id);
+
+                        db.Cars.Remove(CarForDeletion);
+
+                        db.SaveChanges();
+
+                        break;
+                    case Item.plane:
+                        var PlaneForDeletion = db.Planes.Find(id);
+
+                        db.Planes.Remove(PlaneForDeletion);
+
+                        db.SaveChanges();
+                        break;
                 }
             }
         }
