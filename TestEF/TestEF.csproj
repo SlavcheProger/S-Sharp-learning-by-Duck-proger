@@ -57,6 +57,7 @@
     <Compile Include="Controllers\Log.cs" />
     <Compile Include="Controllers\Misc.cs" />
     <Compile Include="DataTypes\Car.cs" />
+    <Compile Include="DataTypes\EnumItems.cs" />
     <Compile Include="DataTypes\Plane.cs" />
     <Compile Include="Migrations\201809020805342_InitialCreate.cs" />
     <Compile Include="Migrations\201809020805342_InitialCreate.Designer.cs">

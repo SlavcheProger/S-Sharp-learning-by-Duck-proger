@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Linq;
+using TestEF.DataTypes;
 
 namespace TestEF.Controllers
 {
     class AppController
     {
-        public enum Item { car = 1, plane = 2 }; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         public static TransportContext db;
         public static void ProgExecute()
         {
             db = DataBaseController.LoadDB();
             while (true)
             {
+                DataBaseController.ShowDB(db);
                 Log.ConsoleLog(ConsoleColor.Yellow, "what do you want to change: car or plane?");
-                tryAgain:
+            tryAgain:
                 var itemInput = Console.ReadLine().ToLower();
                 if (itemInput != "car" && itemInput != "plane")
                 {
                     Log.ConsoleLog(ConsoleColor.Yellow, "Please, enter \"car\" or \"plane\"");
                     goto tryAgain;
                 }
-                var TransportType = (Item)Enum.Parse(typeof(Item), itemInput); //переменные именуем с маленькой буквы
+                var transportType = (EnumItems.Item)Enum.Parse(typeof(EnumItems.Item), itemInput);
 
-                Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {TransportType} (by ID)\n2-add default {TransportType}" +
-                    $" \n3-add {TransportType} with parameters \n4-search info about the {TransportType} in DataBase");
+                Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {transportType} (by ID)\n2-add default {transportType}" +
+                    $" \n3-add {transportType} with parameters \n4-search info about the {transportType} in DataBase");
 
-                var choice = Misc.ChoiceHandler();
+                var choice = Misc.ChoiceOfAction();
 
-                var id = 1;  //Misc.FindId(TransportType); - не понимаю смысла в этом методе - объясни мне.  + пока ставлю тут костыль - потом надо будет исправить
+                CommandHandler(transportType, choice, db);
 
-                CommandHandler(id, TransportType, choice, db);
-
-                DataBaseController.ShowDB(db);
                 Log.ConsoleLog(ConsoleColor.Yellow, "If you want to exit, type 0, or anything else to continue: ");
 
                 if (Int32.TryParse(Console.ReadLine(), out int input) && input == 0)
@@ -41,52 +39,53 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void CommandHandler(int id, Item TransportType, int choice, TransportContext db)
+        public static void CommandHandler(EnumItems.Item transportType, int choice, TransportContext db)
         {
             switch (choice)
             {
                 case 1:
-                    RemoveItemById(TransportType, db); // по названи. понятно, что надо передавать ID
+                    RemoveItemById(transportType, db);
                     break;
                 case 2:
-                    AddNewDefaultItem(id, TransportType, db); // вот тут id не нужен
+                    AddNewDefaultItem(transportType, db);
                     break;
                 case 3:
-                    AddNewCustomItem(id, TransportType, db); // тоже id не нужен - entity framework сам генерит id
+                    AddNewCustomItem(transportType, db);
                     break;
                 case 4:
-                    GetItemById(id, TransportType, db);
+                    GetItemById(transportType, db);
                     break;
             }
-            db.SaveChanges(); // не забывай сохранять изменения в бд, иначе ничего в ней не изменится!!!!!!!!!!!!!
-            //DataBaseController.WriteDataToFile(db); изза этой строчки летели ошибки. Ты теперь работаешь с нормальной БД. Теперь не надо сохранять в файл. Но, если интересна сама ошибка, то он не мог преобразовать нашу новую бд в DataBase (который мы использовали раньше) 
+            db.SaveChanges();
         }
 
-        public static void AddNewCustomItem(int id, Item TransportType, TransportContext db) // id не нужно передавать
+        public static void AddNewCustomItem(EnumItems.Item transportType, TransportContext db)
         {
-            retry:
+        retry:
             try
             {
                 Console.Write("Speed: ");
-                var par1 = Convert.ToInt32(Console.ReadLine()); // один и тот же код фиг знает сколько раз - вынеси в метод и вызывай его.
+                var par1 = Convert.ToInt32(Console.ReadLine()); // один и тот же код фиг знает сколько раз - вынеси в метод и вызывай его.          //А что именно выводить в другой метод?
                 Console.Write("Fuel consumation: ");
                 var par2 = Convert.ToDouble(Console.ReadLine());
                 Console.Write("Cost of maintaining: ");
                 var par3 = Convert.ToInt32(Console.ReadLine());
-                if (TransportType == Item.car) // переделать на switch-case
+                switch (transportType)
                 {
-                    Console.Write("Model: ");
-                    var cpar1 = Console.ReadLine();
-                    Console.Write("Color: ");
-                    var cpar2 = Console.ReadLine();
-                    db.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, id));
-                }
-                else if (TransportType == Item.plane)
-                {
-                    var ppar1 = Console.ReadLine();
-                    Console.Write("Amount of turbines: ");
-                    var ppar2 = Convert.ToInt32(Console.ReadLine()); // аналогично
-                    db.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, id));
+                    case EnumItems.Item.car:
+                        Console.Write("Model: ");
+                        var cpar1 = Console.ReadLine();
+                        Console.Write("Color: ");
+                        var cpar2 = Console.ReadLine();
+                        db.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, 1));
+                        break;
+
+                    case EnumItems.Item.plane:
+                        var ppar1 = Console.ReadLine();
+                        Console.Write("Amount of turbines: ");
+                        var ppar2 = Convert.ToInt32(Console.ReadLine());
+                        db.Planes.Add(new Plane(ppar1, ppar2, par1, par2, par3, 1));
+                        break;
                 }
             }
             catch (Exception exception)
@@ -97,49 +96,76 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void AddNewDefaultItem(int id, Item TransportType, TransportContext db) // передавать енам значение  + Я говорил, что Entity framework сам генерит id. Тебе не надо самому его передавать
+        public static void AddNewDefaultItem(EnumItems.Item transportType, TransportContext db)
         {
-            if (TransportType == Item.car) // переделать на switch-case
+            switch (transportType)
             {
-                db.Cars.Add(new Car());
+                case EnumItems.Item.car:
+                    db.Cars.Add(new Car());
+                    break;
+                case EnumItems.Item.plane:
+                    db.Planes.Add(new Plane());
+                    break;
             }
-            else if (TransportType == Item.plane)
-                db.Planes.Add(new Plane());
         }
 
-        public static void RemoveItemById(Item TransportType, TransportContext db) // передавать енам значение + ГДЕ УДАЛЕНИЕ??? Метод называется "Удалить объект по ID" + Почему ты не передаешь ID?
+        public static void RemoveItemById(EnumItems.Item transportType, TransportContext db)
         {
-            retry:
+        retry:
             try
             {
-                if ((TransportType == Item.car && db.Cars.Count() != 0) || (TransportType == Item.plane && db.Planes.Count() != 0))
+                if ((transportType == EnumItems.Item.car && db.Cars.Count() != 0) || (transportType == EnumItems.Item.plane && db.Planes.Count() != 0))
                 {
-                    Misc.TestOnInput(TransportType, db); // здесь ты должен был уже удалить объект. + почитай в этом методе коменты
+                    Log.ConsoleLog(ConsoleColor.Yellow, $"Insert {transportType}`s id, or type \"exit\" to cancel");
+                    var input = Console.ReadLine();
+                    if (input != "exit")
+                    {
+                        var id = Convert.ToInt32(input);
+                        switch (transportType)
+                        {
+                            case EnumItems.Item.car:
+                                var carForDeletion = db.Cars.Find(id);
+
+                                db.Cars.Remove(carForDeletion);
+
+                                break;
+                            case EnumItems.Item.plane:
+                                var planeForDeletion = db.Planes.Find(id);
+
+                                db.Planes.Remove(planeForDeletion);
+
+                                break;
+                        }
+
+                        db.SaveChanges();
+                    }
                 }
                 else
                 {
-                    Log.ConsoleLog(ConsoleColor.Yellow, $"Sorry, there is no {TransportType} in DataBase.");
+                    Log.ConsoleLog(ConsoleColor.Yellow, $"Sorry, there is no {transportType} in DataBase.");
                 }
             }
             catch (Exception exception)
             {
                 Log.WriteToLog(exception.ToString());
-                Log.ConsoleLog(ConsoleColor.Yellow, $"Wrong {TransportType}`s id! Please, try again.");
+                Log.ConsoleLog(ConsoleColor.Yellow, $"Wrong {transportType}`s id! Please, try again.");
                 goto retry;
             }
         }
 
-        public static void GetItemById(int id, Item TransportType, TransportContext db)
+        public static void GetItemById(EnumItems.Item transportType, TransportContext db)
         {
-            reEnter:
+        reEnter:
             try
             {
-                switch (TransportType)
+                Console.Write("Enter item's Id: ");
+                var id = Convert.ToInt32(Console.ReadLine());
+                switch (transportType)
                 {
-                    case Item.car:
-                        foreach (var item in db.Cars) // по
+                    case EnumItems.Item.car:
+                        foreach (var item in db.Cars)
                         {
-                            var testItem = db.Cars.Find(id); // так ты можешь найти нужный тебе объект по id. Не надо вручную искать - переделай везде на такое.
+                            var testItem = db.Cars.Find(id);
 
                             if (item.Id == id)
                             {
@@ -148,7 +174,7 @@ namespace TestEF.Controllers
                         }
 
                         break;
-                    case Item.plane:
+                    case EnumItems.Item.plane:
                         foreach (var item in db.Planes)
                         {
                             if (item.Id == id)

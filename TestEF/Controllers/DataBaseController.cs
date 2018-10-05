@@ -6,15 +6,16 @@ namespace TestEF.Controllers
 {
     class DataBaseController
     {
-        public static TransportContext LoadDB() {
+        public static TransportContext LoadDB()
+        {
             return new TransportContext();
         }
-        public static void WriteDataToFile(TransportContext  dB)
+        public static void WriteDataToFile(TransportContext dB)
         {
             File.WriteAllText(@"..\..\DB\DataBase.json", JsonConvert.SerializeObject(dB));
         }
 
-        public static void ShowDB(TransportContext  db)
+        public static void ShowDB(TransportContext db)
         {
             foreach (var itemType in db.Cars)
             {
