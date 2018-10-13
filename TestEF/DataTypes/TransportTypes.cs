@@ -1,6 +1,6 @@
 ﻿namespace TestEF.DataTypes
 {
-    class EnumItems
+    class TransportTypes
     {
         public enum Item { car = 1, plane = 2 };
     }

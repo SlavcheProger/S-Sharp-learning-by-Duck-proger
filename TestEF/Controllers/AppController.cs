@@ -13,15 +13,15 @@ namespace TestEF.Controllers
             while (true)
             {
                 DataBaseController.ShowDB(db);
-                Log.ConsoleLog(ConsoleColor.Yellow, "what do you want to change: car or plane?");
+                Log.ConsoleLog(ConsoleColor.Yellow, "what do you want to change?\n1-car\n2-plane");
             tryAgain:
-                var itemInput = Console.ReadLine().ToLower();
-                if (itemInput != "car" && itemInput != "plane")
+                var itemInput = Console.ReadLine();
+                if (itemInput != "1" && itemInput != "2")
                 {
-                    Log.ConsoleLog(ConsoleColor.Yellow, "Please, enter \"car\" or \"plane\"");
+                    Log.ConsoleLog(ConsoleColor.Yellow, "Please, choose \"car\" or \"plane\"");
                     goto tryAgain;
                 }
-                var transportType = (EnumItems.Item)Enum.Parse(typeof(EnumItems.Item), itemInput);
+                var transportType = (TransportTypes.Item)Enum.Parse(typeof(TransportTypes.Item), itemInput);
 
                 Log.ConsoleLog(ConsoleColor.Yellow, $"1-remove {transportType} (by ID)\n2-add default {transportType}" +
                     $" \n3-add {transportType} with parameters \n4-search info about the {transportType} in DataBase");
@@ -39,12 +39,13 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void CommandHandler(EnumItems.Item transportType, int choice, TransportContext db)
+        public static void CommandHandler(TransportTypes.Item transportType, int choice, TransportContext db)
         {
             switch (choice)
             {
                 case 1:
-                    RemoveItemById(transportType, db);
+                    var id = Misc.GetId(transportType, db);
+                    RemoveItemById(transportType, db, id);
                     break;
                 case 2:
                     AddNewDefaultItem(transportType, db);
@@ -53,13 +54,14 @@ namespace TestEF.Controllers
                     AddNewCustomItem(transportType, db);
                     break;
                 case 4:
-                    GetItemById(transportType, db);
+                    id = Misc.GetId(transportType, db);
+                    GetItemById(transportType, db, id);
                     break;
             }
             db.SaveChanges();
         }
 
-        public static void AddNewCustomItem(EnumItems.Item transportType, TransportContext db)
+        public static void AddNewCustomItem(TransportTypes.Item transportType, TransportContext db)
         {
         retry:
             try
@@ -72,7 +74,7 @@ namespace TestEF.Controllers
                 var par3 = Convert.ToInt32(Console.ReadLine());
                 switch (transportType)
                 {
-                    case EnumItems.Item.car:
+                    case TransportTypes.Item.car:
                         Console.Write("Model: ");
                         var cpar1 = Console.ReadLine();
                         Console.Write("Color: ");
@@ -80,7 +82,7 @@ namespace TestEF.Controllers
                         db.Cars.Add(new Car(cpar1, cpar2, par1, par2, par3, 1));
                         break;
 
-                    case EnumItems.Item.plane:
+                    case TransportTypes.Item.plane:
                         var ppar1 = Console.ReadLine();
                         Console.Write("Amount of turbines: ");
                         var ppar2 = Convert.ToInt32(Console.ReadLine());
@@ -96,49 +98,42 @@ namespace TestEF.Controllers
             }
         }
 
-        public static void AddNewDefaultItem(EnumItems.Item transportType, TransportContext db)
+        public static void AddNewDefaultItem(TransportTypes.Item transportType, TransportContext db)
         {
             switch (transportType)
             {
-                case EnumItems.Item.car:
+                case TransportTypes.Item.car:
                     db.Cars.Add(new Car());
                     break;
-                case EnumItems.Item.plane:
+                case TransportTypes.Item.plane:
                     db.Planes.Add(new Plane());
                     break;
             }
         }
 
-        public static void RemoveItemById(EnumItems.Item transportType, TransportContext db)
+        public static void RemoveItemById(TransportTypes.Item transportType, TransportContext db, int id)
         {
         retry:
             try
             {
-                if ((transportType == EnumItems.Item.car && db.Cars.Count() != 0) || (transportType == EnumItems.Item.plane && db.Planes.Count() != 0))
+                if ((transportType == TransportTypes.Item.car && db.Cars.Count() != 0) || (transportType == TransportTypes.Item.plane && db.Planes.Count() != 0))
                 {
-                    Log.ConsoleLog(ConsoleColor.Yellow, $"Insert {transportType}`s id, or type \"exit\" to cancel");
-                    var input = Console.ReadLine();
-                    if (input != "exit")
+                    switch (transportType)
                     {
-                        var id = Convert.ToInt32(input);
-                        switch (transportType)
-                        {
-                            case EnumItems.Item.car:
-                                var carForDeletion = db.Cars.Find(id);
+                        case TransportTypes.Item.car:
+                            var carForDeletion = db.Cars.Find(id);
 
-                                db.Cars.Remove(carForDeletion);
+                            db.Cars.Remove(carForDeletion);
 
-                                break;
-                            case EnumItems.Item.plane:
-                                var planeForDeletion = db.Planes.Find(id);
+                            break;
+                        case TransportTypes.Item.plane:
+                            var planeForDeletion = db.Planes.Find(id);
 
-                                db.Planes.Remove(planeForDeletion);
+                            db.Planes.Remove(planeForDeletion);
 
-                                break;
-                        }
-
-                        db.SaveChanges();
+                            break;
                     }
+                    db.SaveChanges();
                 }
                 else
                 {
@@ -148,40 +143,27 @@ namespace TestEF.Controllers
             catch (Exception exception)
             {
                 Log.WriteToLog(exception.ToString());
-                Log.ConsoleLog(ConsoleColor.Yellow, $"Wrong {transportType}`s id! Please, try again.");
+                Log.ConsoleLog(ConsoleColor.Green, exception.ToString());
                 goto retry;
             }
         }
 
-        public static void GetItemById(EnumItems.Item transportType, TransportContext db)
+        public static void GetItemById(TransportTypes.Item transportType, TransportContext db, int id)
         {
         reEnter:
             try
             {
-                Console.Write("Enter item's Id: ");
-                var id = Convert.ToInt32(Console.ReadLine());
                 switch (transportType)
                 {
-                    case EnumItems.Item.car:
-                        foreach (var item in db.Cars)
-                        {
-                            var testItem = db.Cars.Find(id);
+                    case TransportTypes.Item.car:
+                        var carItem = db.Cars.Find(id);
+                        Log.ConsoleLog(ConsoleColor.Cyan, $"Speed: {carItem.Speed}\nCost of maintain: {carItem.CostOfMaintain} \nFuel consumation: {carItem.FuelConsum} \nColor: {carItem.Color} \nModel: {carItem.Model} \nId: {carItem.Id}\ncar\n*");
 
-                            if (item.Id == id)
-                            {
-                                Log.ConsoleLog(ConsoleColor.Cyan, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nColor: {item.Color} \nModel: {item.Model} \nId: {item.Id}\ncar\n*");
-                            }
-                        }
 
                         break;
-                    case EnumItems.Item.plane:
-                        foreach (var item in db.Planes)
-                        {
-                            if (item.Id == id)
-                            {
-                                Log.ConsoleLog(ConsoleColor.Red, $"Speed: {item.Speed}\nCost of maintain: {item.CostOfMaintain} \nFuel consumation: {item.FuelConsum} \nAvia company: {item.AviaComp} \nId: {item.Id}\nplane\n*");
-                            }
-                        }
+                    case TransportTypes.Item.plane:
+                        var planeItem = db.Planes.Find(id);
+                        Log.ConsoleLog(ConsoleColor.Red, $"Speed: {planeItem.Speed}\nCost of maintain: {planeItem.CostOfMaintain} \nFuel consumation: {planeItem.FuelConsum} \nAvia company: {planeItem.AviaComp} \nId: {planeItem.Id}\nplane\n*");
 
                         break;
                 }
