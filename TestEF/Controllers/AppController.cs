@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using TestEF.DataTypes;
 
 namespace TestEF.Controllers
 {
@@ -14,7 +13,7 @@ namespace TestEF.Controllers
             {
                 DataBaseController.ShowDB(db);
                 Log.ConsoleLog(ConsoleColor.Yellow, "what do you want to change?\n1-car\n2-plane");
-            tryAgain:
+                tryAgain:
                 var itemInput = Console.ReadLine();
                 if (itemInput != "1" && itemInput != "2")
                 {
@@ -63,11 +62,11 @@ namespace TestEF.Controllers
 
         public static void AddNewCustomItem(TransportTypes.Item transportType, TransportContext db)
         {
-        retry:
+            retry:
             try
             {
                 Console.Write("Speed: ");
-                var par1 = Convert.ToInt32(Console.ReadLine()); // один и тот же код фиг знает сколько раз - вынеси в метод и вызывай его.          //А что именно выводить в другой метод?
+                var par1 = Convert.ToInt32(Console.ReadLine()); // один и тот же код фиг знает сколько раз - вынеси в метод и вызывай его.          //А что именно выводить в другой метод?  // класс program пункт 3
                 Console.Write("Fuel consumation: ");
                 var par2 = Convert.ToDouble(Console.ReadLine());
                 Console.Write("Cost of maintaining: ");
@@ -113,7 +112,7 @@ namespace TestEF.Controllers
 
         public static void RemoveItemById(TransportTypes.Item transportType, TransportContext db, int id)
         {
-        retry:
+            retry:
             try
             {
                 if ((transportType == TransportTypes.Item.car && db.Cars.Count() != 0) || (transportType == TransportTypes.Item.plane && db.Planes.Count() != 0))
@@ -121,13 +120,13 @@ namespace TestEF.Controllers
                     switch (transportType)
                     {
                         case TransportTypes.Item.car:
-                            var carForDeletion = db.Cars.Find(id);
+                            var carForDeletion = db.Cars.Find(id); // у тебя есть метод GetItemById. зачем он? я думаю, что именно для этого
 
                             db.Cars.Remove(carForDeletion);
 
                             break;
                         case TransportTypes.Item.plane:
-                            var planeForDeletion = db.Planes.Find(id);
+                            var planeForDeletion = db.Planes.Find(id);  // у тебя есть метод GetItemById. зачем он? я думаю, что именно для этого
 
                             db.Planes.Remove(planeForDeletion);
 
@@ -150,19 +149,18 @@ namespace TestEF.Controllers
 
         public static void GetItemById(TransportTypes.Item transportType, TransportContext db, int id)
         {
-        reEnter:
+            reEnter:
             try
             {
                 switch (transportType)
                 {
                     case TransportTypes.Item.car:
-                        var carItem = db.Cars.Find(id);
+                        var carItem = db.Cars.Find(id); 
                         Log.ConsoleLog(ConsoleColor.Cyan, $"Speed: {carItem.Speed}\nCost of maintain: {carItem.CostOfMaintain} \nFuel consumation: {carItem.FuelConsum} \nColor: {carItem.Color} \nModel: {carItem.Model} \nId: {carItem.Id}\ncar\n*");
-
 
                         break;
                     case TransportTypes.Item.plane:
-                        var planeItem = db.Planes.Find(id);
+                        var planeItem = db.Planes.Find(id); 
                         Log.ConsoleLog(ConsoleColor.Red, $"Speed: {planeItem.Speed}\nCost of maintain: {planeItem.CostOfMaintain} \nFuel consumation: {planeItem.FuelConsum} \nAvia company: {planeItem.AviaComp} \nId: {planeItem.Id}\nplane\n*");
 
                         break;
@@ -172,6 +170,6 @@ namespace TestEF.Controllers
             {
                 goto reEnter;
             }
-        }
+        } //метод должен возвращать объект, а не выводить на экран данные. ексли не можешь возвращать неизвестный тип, то сделай хотя бы несколько методов поиска (для машин и самолетов)
     }
 }

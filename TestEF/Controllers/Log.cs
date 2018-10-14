@@ -8,12 +8,10 @@ namespace TestEF.Controllers
         public static void ConsoleLog(ConsoleColor clr, string message)
         {
             Console.ForegroundColor = clr;
-            Console.WriteLine(message);
+            Console.WriteLine($"{message} \n"); // лучше сделать так вместо строчки с выводом пустой строки
             Console.ResetColor();
-            Console.WriteLine();
         }
-
-        public static void WriteToLog(String error)
+        public static void WriteToLog(string error)
         {
             File.AppendAllText(@"..\..\Log.txt", error);
         }

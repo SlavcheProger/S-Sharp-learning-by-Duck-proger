@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.IO;
+﻿using System;
 
 namespace TestEF.Controllers
 {
@@ -10,11 +8,6 @@ namespace TestEF.Controllers
         {
             return new TransportContext();
         }
-        public static void WriteDataToFile(TransportContext dB)
-        {
-            File.WriteAllText(@"..\..\DB\DataBase.json", JsonConvert.SerializeObject(dB));
-        }
-
         public static void ShowDB(TransportContext db)
         {
             foreach (var itemType in db.Cars)
