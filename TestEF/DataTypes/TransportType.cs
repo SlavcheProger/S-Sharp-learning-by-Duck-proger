@@ -1,8 +1,8 @@
 ﻿namespace TestEF.DataTypes
 {
-   public enum Item {
-            car = 1,
-            plane = 2
-        }
-    
+    public enum TransportType
+    {
+        car = 1,
+        plane = 2
+    }
 }

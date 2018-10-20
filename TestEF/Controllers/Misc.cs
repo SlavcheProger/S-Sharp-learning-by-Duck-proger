@@ -18,14 +18,14 @@ namespace TestEF.Controllers
             return choice;
         }
 
-        public static int GetId(TransportTypes.Item transportType, TransportContext db)
+        public static int GetId(TransportType transportType, TransportContext db)
         {
         retry:
             try
             {
                 Console.Write("Enter item's Id: ");
                 var id = Convert.ToInt32(Console.ReadLine());
-                if ((db.Planes.Find(id) == null && transportType == TransportTypes.Item.plane) || (db.Cars.Find(id) == null && transportType == TransportTypes.Item.car))
+                if ((db.Planes.Find(id) == null && transportType == TransportType.plane) || (db.Cars.Find(id) == null && transportType == TransportType.car))
                 {
                     Log.ConsoleLog(ConsoleColor.Yellow, $"Sorry, there is no {transportType} in DataBase.");
                     goto retry;

@@ -11,9 +11,9 @@ namespace TestEF.Controllers
             Console.WriteLine($"{message} \n"); // лучше сделать так вместо строчки с выводом пустой строки
             Console.ResetColor();
         }
-        public static void WriteToLog(string error)
+        public static void WriteDataToFile(string filepath, string message)
         {
-            File.AppendAllText(@"..\..\Log.txt", error);
+            File.AppendAllText(filepath, message);
         }
     }
 }
