@@ -17,7 +17,7 @@ namespace TestEF
             catch (Exception exception)
             {
                 Log.ConsoleLog(ConsoleColor.Green, exception.ToString());
-                Log.WriteToLog(@"..\..\Log.txt", exception.ToString());
+                Log.WriteDataToFile(@"..\..\Log.txt", exception.ToString());
             }
             finally
             {
